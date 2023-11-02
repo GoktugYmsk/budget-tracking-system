@@ -1,0 +1,14 @@
+.container-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+
+    .container-content__catogory {
+        display: flex;
+        width: 800px;
+        height: 500px;
+        background: red;
+    }
+}

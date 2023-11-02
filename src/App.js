@@ -1,12 +1,21 @@
 import './App.css';
-import Header from './components/header';
-import Content from './components/content';
+import { Route, Routes } from 'react-router-dom';
+import Login from './components/login';
+import Signup from './components/signup';
+import { Helmet } from 'react-helmet';
+import CustomComponent from './components/customComponent';
 
 function App() {
   return (
     <div className="App">
-      <Header />
-      <Content />
+      <Helmet>
+        <title>budget-tracking-system</title>
+      </Helmet>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/Signup" element={<Signup />} />
+        <Route path="/MainPage" element={<CustomComponent />} />
+      </Routes>
     </div>
   );
 }
