@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { CSVLink } from "react-csv";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
 import "./index.scss";
 
 function Content() {
-    const [data, setData] = useState([]);
     const [period, setPeriod] = useState("daily");
 
     const backendData = {
@@ -18,7 +20,6 @@ function Content() {
     const renderChart = () => {
         const chartData = backendData[period];
 
-        // Verileri SVG elemanlarıyla çizgi grafiği olarak oluştur
         const minX = 0;
         const maxX = chartData.length - 1;
         const minY = Math.min(...chartData);
@@ -47,6 +48,52 @@ function Content() {
         );
     };
 
+    const exportToCSV = () => {
+        const csvData = backendData[period].map((value, index) => ({
+            Day: `Day ${index + 1}`,
+            Value: value,
+        }));
+        return csvData;
+    };
+
+    const exportToPDF = () => {
+        const doc = new jsPDF();
+        doc.autoTable({
+            head: [["Day", "Value"]],
+            body: backendData[period].map((value, index) => [`Day ${index + 1}`, value]),
+        });
+        doc.save(`chart_data_${period}.pdf`);
+    };
+
+
+    const renderTable = () => {
+        const chartData = backendData[period];
+        const tableData = chartData.map((value, index) => ({
+            Day: `Day ${index + 1}`,
+            Value: value,
+        }));
+
+        return (
+            <table>
+                <thead>
+                    <tr>
+                        <th>Day</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {tableData.map((data, index) => (
+                        <tr key={index}>
+                            <td>{data.Day}</td>
+                            <td>{data.Value}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        );
+    };
+
+
     return (
         <div className="container-content">
             <div className="container-content__category">Category</div>
@@ -57,7 +104,19 @@ function Content() {
                     <button onClick={() => handleChangePeriod("weekly")}>Weekly</button>
                     <button onClick={() => handleChangePeriod("monthly")}>Monthly</button>
                 </div>
-                <div className="chart-container">{renderChart()}</div>
+                <div className="chart-container">
+                    {renderChart()}
+                    <div>
+                        <CSVLink
+                            data={exportToCSV()}
+                            filename={`chart_data_${period}.csv`}
+                        >
+                            Export to CSV
+                        </CSVLink>
+                        <button onClick={exportToPDF}>Export to PDF</button>
+                    </div>
+                </div>
+                {renderTable()}
             </div>
         </div>
     );

@@ -3,9 +3,17 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
+import { BiExit } from 'react-icons/bi';
+
 import './index.scss'
 
-function Header() {
+function Header({ navigate }) {
+
+
+    const handleLogoutClick = () => {
+        navigate('/')
+    }
+
     return (
         <div className='container-header' >
             <div className='container-header__navbar'>
@@ -29,6 +37,7 @@ function Header() {
                                     </NavDropdown.Item>
                                 </NavDropdown>
                             </Nav>
+                            <BiExit className='container-header__logout' onClick={handleLogoutClick} />
                         </Navbar.Collapse>
                     </Container>
                 </Navbar>
