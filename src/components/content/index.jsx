@@ -10,7 +10,7 @@ function Content() {
         date: "",
         category: "",
         amount: 0,
-        type: "Income", // Default to "Income"
+        type: "Income",
     });
 
     const storedData = JSON.parse(localStorage.getItem("Budget")) || {
@@ -51,7 +51,7 @@ function Content() {
             date: "",
             category: "",
             amount: 0,
-            type: "Income", // Default to "Income"
+            type: "Income",
         });
 
         localStorage.setItem("Budget", JSON.stringify(backendData));
