@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CSVLink } from "react-csv";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
@@ -6,34 +6,108 @@ import "./index.scss";
 
 function Content() {
     const [period, setPeriod] = useState("daily");
+    const [newIncome, setNewIncome] = useState({
+        date: "",
+        category: "Income",
+        amount: 0,
+    });
 
-    const backendData = {
-        daily: [
-            { date: "2023-11-01", category: "Income", amount: 10 },
-            { date: "2023-11-02", category: "Expense", amount: 20 },
-            { date: "2023-11-03", category: "Income", amount: 15 },
-            { date: "2023-11-04", category: "Expense", amount: 30 },
-            { date: "2023-11-05", category: "Income", amount: 25 },
-        ],
-        weekly: [
-            { date: "2023-11-01", category: "Income", amount: 10 },
-            { date: "2023-11-02", category: "Expense", amount: 40 },
-            { date: "2023-11-03", category: "Income", amount: 33 },
-            { date: "2023-11-04", category: "Expense", amount: 80 },
-            { date: "2023-11-05", category: "Income", amount: 12 },
-        ],
-        monthly: [
-            { date: "2023-11-01", category: "Income", amount: 20 },
-            { date: "2023-11-02", category: "Expense", amount: 123 },
-            { date: "2023-11-03", category: "Income", amount: 200 },
-            { date: "2023-11-04", category: "Expense", amount: 41 },
-            { date: "2023-11-05", category: "Income", amount: 112 },
-        ],
+    const storedData = JSON.parse(localStorage.getItem("Budget")) || {
+        daily: [],
+        weekly: [],
+        monthly: [],
     };
+
+    const [backendData, setBackendData] = useState(storedData);
+
+    useEffect(() => {
+        const storedData = JSON.parse(localStorage.getItem("Budget")) || {
+            daily: [],
+            weekly: [],
+            monthly: [],
+        };
+        setBackendData(storedData);
+    }, []);
 
     const handleChangePeriod = (newPeriod) => {
         setPeriod(newPeriod);
     };
+
+    const handleAddIncome = () => {
+        backendData[period].push(newIncome);
+
+        if (period !== "daily") {
+            backendData["daily"].push(newIncome);
+        }
+        if (period !== "weekly") {
+            backendData["weekly"].push(newIncome);
+        }
+        if (period !== "monthly") {
+            backendData["monthly"].push(newIncome);
+        }
+
+        setNewIncome({
+            date: "",
+            category: "Income",
+            amount: 0,
+        });
+
+        localStorage.setItem("Budget", JSON.stringify(backendData));
+    };
+
+    const renderIncomeForm = () => {
+        const isFormValid = newIncome.date && newIncome.category && newIncome.amount > 0;
+
+        return (
+            <div>
+                <h2>Add Income</h2>
+                <div>
+                    <input
+                        type="date"
+                        value={newIncome.date}
+                        onChange={(e) =>
+                            setNewIncome({
+                                ...newIncome,
+                                date: e.target.value,
+                            })
+                        }
+                    />
+                </div>
+                <div>
+                    <select
+                        value={newIncome.category}
+                        onChange={(e) =>
+                            setNewIncome({
+                                ...newIncome,
+                                category: e.target.value,
+                            })
+                        }
+                    >
+                        <option value="Income">Income</option>
+                        <option value="Expense">Expense</option>
+                    </select>
+                </div>
+                <div>
+                    <input
+                        type="number"
+                        value={newIncome.amount}
+                        onChange={(e) =>
+                            setNewIncome({
+                                ...newIncome,
+                                amount: parseFloat(e.target.value),
+                            })
+                        }
+                    />
+                </div>
+                <div>
+                    <button onClick={handleAddIncome} disabled={!isFormValid}>
+                        Add Income
+                    </button>
+                </div>
+            </div>
+        );
+    };
+
 
     const renderChart = () => {
         const chartData = backendData[period];
@@ -133,6 +207,7 @@ function Content() {
                     </div>
                 </div>
                 {renderTable()}
+                {renderIncomeForm()}
             </div>
         </div>
     );
