@@ -6,10 +6,11 @@ import "./index.scss";
 
 function Content() {
     const [period, setPeriod] = useState("daily");
-    const [newIncome, setNewIncome] = useState({
+    const [newTransaction, setNewTransaction] = useState({
         date: "",
-        category: "Income",
+        category: "",
         amount: 0,
+        type: "Income", // Default to "Income"
     });
 
     const storedData = JSON.parse(localStorage.getItem("Budget")) || {
@@ -33,81 +34,112 @@ function Content() {
         setPeriod(newPeriod);
     };
 
-    const handleAddIncome = () => {
-        backendData[period].push(newIncome);
+    const handleAddTransaction = () => {
+        backendData[period].push(newTransaction);
 
         if (period !== "daily") {
-            backendData["daily"].push(newIncome);
+            backendData["daily"].push(newTransaction);
         }
         if (period !== "weekly") {
-            backendData["weekly"].push(newIncome);
+            backendData["weekly"].push(newTransaction);
         }
         if (period !== "monthly") {
-            backendData["monthly"].push(newIncome);
+            backendData["monthly"].push(newTransaction);
         }
 
-        setNewIncome({
+        setNewTransaction({
             date: "",
-            category: "Income",
+            category: "",
             amount: 0,
+            type: "Income", // Default to "Income"
         });
 
         localStorage.setItem("Budget", JSON.stringify(backendData));
     };
 
-    const renderIncomeForm = () => {
-        const isFormValid = newIncome.date && newIncome.category && newIncome.amount > 0;
+    const isTransactionFormValid = newTransaction.date && newTransaction.category && newTransaction.amount > 0 && newTransaction.type;
 
+    const renderTransactionForm = () => {
         return (
             <div>
-                <h2>Add Income</h2>
+                <h2>Add {newTransaction.type === "Income" ? "Income" : "Expense"}</h2>
                 <div>
                     <input
                         type="date"
-                        value={newIncome.date}
+                        value={newTransaction.date}
                         onChange={(e) =>
-                            setNewIncome({
-                                ...newIncome,
+                            setNewTransaction({
+                                ...newTransaction,
                                 date: e.target.value,
                             })
                         }
                     />
                 </div>
                 <div>
-                    <select
-                        value={newIncome.category}
+                    <input
+                        type="text"
+                        placeholder="Category"
+                        value={newTransaction.category}
                         onChange={(e) =>
-                            setNewIncome({
-                                ...newIncome,
+                            setNewTransaction({
+                                ...newTransaction,
                                 category: e.target.value,
                             })
                         }
-                    >
-                        <option value="Income">Income</option>
-                        <option value="Expense">Expense</option>
-                    </select>
+                    />
                 </div>
                 <div>
                     <input
-                        type="number"
-                        value={newIncome.amount}
+                        placeholder="Amount"
+                        value={newTransaction.amount}
                         onChange={(e) =>
-                            setNewIncome({
-                                ...newIncome,
+                            setNewTransaction({
+                                ...newTransaction,
                                 amount: parseFloat(e.target.value),
                             })
                         }
                     />
                 </div>
                 <div>
-                    <button onClick={handleAddIncome} disabled={!isFormValid}>
-                        Add Income
+                    <label>
+                        <input
+                            type="radio"
+                            name="transactionType"
+                            value="Income"
+                            checked={newTransaction.type === "Income"}
+                            onChange={(e) =>
+                                setNewTransaction({
+                                    ...newTransaction,
+                                    type: e.target.value,
+                                })
+                            }
+                        />
+                        Income
+                    </label>
+                    <label>
+                        <input
+                            type="radio"
+                            name="transactionType"
+                            value="Expense"
+                            checked={newTransaction.type === "Expense"}
+                            onChange={(e) =>
+                                setNewTransaction({
+                                    ...newTransaction,
+                                    type: e.target.value,
+                                })
+                            }
+                        />
+                        Expense
+                    </label>
+                </div>
+                <div>
+                    <button onClick={handleAddTransaction} disabled={!isTransactionFormValid}>
+                        Add {newTransaction.type === "Income" ? "Income" : "Expense"}
                     </button>
                 </div>
             </div>
         );
     };
-
 
     const renderChart = () => {
         const chartData = backendData[period];
@@ -143,6 +175,7 @@ function Content() {
             Date: data.date,
             Category: data.category,
             Amount: data.amount,
+            Type: data.type,
         }));
         return csvData;
     };
@@ -150,11 +183,12 @@ function Content() {
     const exportToPDF = () => {
         const doc = new jsPDF();
         doc.autoTable({
-            head: [["Date", "Category", "Amount"]],
+            head: [["Date", "Category", "Amount", "Type"]],
             body: backendData[period].map((data, index) => [
                 data.date,
                 data.category,
                 data.amount,
+                data.type,
             ]),
         });
         doc.save(`chart_data_${period}.pdf`);
@@ -169,6 +203,7 @@ function Content() {
                         <th>Date</th>
                         <th>Category</th>
                         <th>Amount</th>
+                        <th>Type</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -177,6 +212,7 @@ function Content() {
                             <td>{data.date}</td>
                             <td>{data.category}</td>
                             <td>{data.amount}</td>
+                            <td>{data.type}</td>
                         </tr>
                     ))}
                 </tbody>
@@ -207,7 +243,7 @@ function Content() {
                     </div>
                 </div>
                 {renderTable()}
-                {renderIncomeForm()}
+                {renderTransactionForm()}
             </div>
         </div>
     );
