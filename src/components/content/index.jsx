@@ -8,9 +8,27 @@ function Content() {
     const [period, setPeriod] = useState("daily");
 
     const backendData = {
-        daily: [10, 20, 15, 30, 25],
-        weekly: [70, 60, 80, 75, 90],
-        monthly: [300, 350, 400, 380, 420],
+        daily: [
+            { date: "2023-11-01", category: "Income", amount: 10 },
+            { date: "2023-11-02", category: "Expense", amount: 20 },
+            { date: "2023-11-03", category: "Income", amount: 15 },
+            { date: "2023-11-04", category: "Expense", amount: 30 },
+            { date: "2023-11-05", category: "Income", amount: 25 },
+        ],
+        weekly: [
+            { date: "2023-11-01", category: "Income", amount: 10 },
+            { date: "2023-11-02", category: "Expense", amount: 40 },
+            { date: "2023-11-03", category: "Income", amount: 33 },
+            { date: "2023-11-04", category: "Expense", amount: 80 },
+            { date: "2023-11-05", category: "Income", amount: 12 },
+        ],
+        monthly: [
+            { date: "2023-11-01", category: "Income", amount: 20 },
+            { date: "2023-11-02", category: "Expense", amount: 123 },
+            { date: "2023-11-03", category: "Income", amount: 200 },
+            { date: "2023-11-04", category: "Expense", amount: 41 },
+            { date: "2023-11-05", category: "Income", amount: 112 },
+        ],
     };
 
     const handleChangePeriod = (newPeriod) => {
@@ -19,20 +37,18 @@ function Content() {
 
     const renderChart = () => {
         const chartData = backendData[period];
-
-        const minX = 0;
         const maxX = chartData.length - 1;
-        const minY = Math.min(...chartData);
-        const maxY = Math.max(...chartData);
+        const minY = 0;
+        const maxY = Math.max(...chartData.map((data) => data.amount));
 
         const chartWidth = 500;
         const chartHeight = 300;
         const xScale = chartWidth / maxX;
-        const yScale = chartHeight / (maxY - minY);
+        const yScale = chartHeight / maxY;
 
-        const path = chartData.map((value, index) => {
+        const path = chartData.map((data, index) => {
             const x = index * xScale;
-            const y = (maxY - value) * yScale;
+            const y = chartHeight - data.amount * yScale;
             return `${x},${y}`;
         });
 
@@ -49,9 +65,10 @@ function Content() {
     };
 
     const exportToCSV = () => {
-        const csvData = backendData[period].map((value, index) => ({
-            Day: `Day ${index + 1}`,
-            Value: value,
+        const csvData = backendData[period].map((data, index) => ({
+            Date: data.date,
+            Category: data.category,
+            Amount: data.amount,
         }));
         return csvData;
     };
@@ -59,40 +76,39 @@ function Content() {
     const exportToPDF = () => {
         const doc = new jsPDF();
         doc.autoTable({
-            head: [["Day", "Value"]],
-            body: backendData[period].map((value, index) => [`Day ${index + 1}`, value]),
+            head: [["Date", "Category", "Amount"]],
+            body: backendData[period].map((data, index) => [
+                data.date,
+                data.category,
+                data.amount,
+            ]),
         });
         doc.save(`chart_data_${period}.pdf`);
     };
 
-
     const renderTable = () => {
         const chartData = backendData[period];
-        const tableData = chartData.map((value, index) => ({
-            Day: `Day ${index + 1}`,
-            Value: value,
-        }));
-
         return (
             <table>
                 <thead>
                     <tr>
-                        <th>Day</th>
-                        <th>Value</th>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Amount</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {tableData.map((data, index) => (
+                    {chartData.map((data, index) => (
                         <tr key={index}>
-                            <td>{data.Day}</td>
-                            <td>{data.Value}</td>
+                            <td>{data.date}</td>
+                            <td>{data.category}</td>
+                            <td>{data.amount}</td>
                         </tr>
                     ))}
                 </tbody>
             </table>
         );
     };
-
 
     return (
         <div className="container-content">
