@@ -1,12 +1,20 @@
 .container-signup {
     display: flex;
     flex-direction: column;
-    margin: 0 auto;
+    align-items: center;
+    justify-content: center;
+    background: rgb(145, 237, 253);
+    background: linear-gradient(to left, rgb(145, 237, 253), rgb(5, 51, 110));
+
+    height: 100vh;
     padding: 20px;
 
 
     h2 {
-        text-align: center;
+        display: flex;
+        position: absolute;
+        top: 20px;
+        color: white;
     }
 
     .container-signup__formGroup {
@@ -14,13 +22,50 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        background: rgb(0, 162, 255);
-        width: 500px;
+        border-radius: 50px;
+        width: 600px;
+        height: 600px;
         padding: 40px;
+        background: rgb(91, 185, 239);
+
+        .container-signup__formGroup__username {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+
+            input {
+                border-radius: 10px;
+                height: 30px;
+                border-style: none;
+            }
+        }
+
+        .container-signup__formGroup__email {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+
+            input {
+                border-radius: 10px;
+                height: 30px;
+                border-style: none;
+            }
+        }
+
+        .container-signup__formGroup__password {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+
+            input {
+                border-radius: 10px;
+                height: 30px;
+                border-style: none;
+            }
+        }
 
 
         form {
-
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -37,13 +82,6 @@
                     display: block;
                     font-weight: bold;
                 }
-
-                input {
-                    width: 90%;
-                    padding: 10px;
-                    border: 1px solid #ccc;
-                    border-radius: 3px;
-                }
             }
 
             button {
@@ -52,18 +90,38 @@
                 padding: 10px;
                 color: #fff;
                 border: none;
-                background: rgb(38, 0, 255);
-                border-radius: 3px;
+                background: rgba(5, 50, 110, 0.695);
+                border-radius: 20px;
                 cursor: pointer;
                 font-weight: bold;
+                height: 60px;
+                width: 200px;
+
+                &:hover {
+                    background: rgba(5, 50, 110, 0.58);
+                    transform: scale(0.88);
+                }
             }
 
         }
 
+        .container-signup__account {
+            position: relative;
+            top: 90px;
+            right: 110px;
+        }
+
         .container-signup__button {
+            margin-top: 50px;
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            height: 120px;
             gap: 20px;
+
+            .container-signup__button__left {
+                display: flex;
+                flex-direction: column;
+            }
         }
     }
 

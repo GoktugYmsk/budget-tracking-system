@@ -34,7 +34,7 @@ function Signup() {
             <h2>Signup</h2>
             <div className='container-signup__formGroup' >
                 <form onSubmit={handleSubmit}>
-                    <div>
+                    <div className='container-signup__formGroup__username' >
                         <label>Username:</label>
                         <input
                             type="text"
@@ -43,7 +43,7 @@ function Signup() {
                             required
                         />
                     </div>
-                    <div>
+                    <div className='container-signup__formGroup__email' >
                         <label>Email:</label>
                         <input
                             type="email"
@@ -52,7 +52,7 @@ function Signup() {
                             required
                         />
                     </div>
-                    <div>
+                    <div className='container-signup__formGroup__password' >
                         <label>Password:</label>
                         <input
                             type="password"
@@ -61,9 +61,10 @@ function Signup() {
                             required
                         />
                     </div>
+
+                    <p className='container-signup__account' >Do you have an account ?</p>
                     <div className='container-signup__button' >
                         <button type="submit">Signup</button>
-                        <p>Do you have an account ?</p>
                         <button onClick={hadnleLoginClick} type="submit">Login</button>
                     </div>
                 </form>
