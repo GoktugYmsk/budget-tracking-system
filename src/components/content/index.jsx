@@ -2,10 +2,20 @@ import React, { useEffect, useState } from "react";
 import { CSVLink } from "react-csv";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
+
+
+
+import RenderTransactionForm from "./renderTransactionForm";
+import RenderChart from "./renderChart";
+
+import RenderTable from "./renderTable";
+
 import "./index.scss";
 
 function Content() {
     const [period, setPeriod] = useState("daily");
+
+
     const [newTransaction, setNewTransaction] = useState({
         date: "",
         category: "",
@@ -21,6 +31,8 @@ function Content() {
 
     const [backendData, setBackendData] = useState(storedData);
 
+
+
     useEffect(() => {
         const storedData = JSON.parse(localStorage.getItem("Budget")) || {
             daily: [],
@@ -34,141 +46,8 @@ function Content() {
         setPeriod(newPeriod);
     };
 
-    const handleAddTransaction = () => {
-        backendData[period].push(newTransaction);
-
-        if (period !== "daily") {
-            backendData["daily"].push(newTransaction);
-        }
-        if (period !== "weekly") {
-            backendData["weekly"].push(newTransaction);
-        }
-        if (period !== "monthly") {
-            backendData["monthly"].push(newTransaction);
-        }
-
-        setNewTransaction({
-            date: "",
-            category: "",
-            amount: 0,
-            type: "Income",
-        });
-
-        localStorage.setItem("Budget", JSON.stringify(backendData));
-    };
 
     const isTransactionFormValid = newTransaction.date && newTransaction.category && newTransaction.amount > 0 && newTransaction.type;
-
-    const renderTransactionForm = () => {
-        return (
-            <div>
-                <h2>Add {newTransaction.type === "Income" ? "Income" : "Expense"}</h2>
-                <div>
-                    <input
-                        type="date"
-                        value={newTransaction.date}
-                        onChange={(e) =>
-                            setNewTransaction({
-                                ...newTransaction,
-                                date: e.target.value,
-                            })
-                        }
-                    />
-                </div>
-                <div>
-                    <input
-                        type="text"
-                        placeholder="Category"
-                        value={newTransaction.category}
-                        onChange={(e) =>
-                            setNewTransaction({
-                                ...newTransaction,
-                                category: e.target.value,
-                            })
-                        }
-                    />
-                </div>
-                <div>
-                    <input
-                        placeholder="Amount"
-                        value={newTransaction.amount}
-                        onChange={(e) =>
-                            setNewTransaction({
-                                ...newTransaction,
-                                amount: parseFloat(e.target.value),
-                            })
-                        }
-                    />
-                </div>
-                <div>
-                    <label>
-                        <input
-                            type="radio"
-                            name="transactionType"
-                            value="Income"
-                            checked={newTransaction.type === "Income"}
-                            onChange={(e) =>
-                                setNewTransaction({
-                                    ...newTransaction,
-                                    type: e.target.value,
-                                })
-                            }
-                        />
-                        Income
-                    </label>
-                    <label>
-                        <input
-                            type="radio"
-                            name="transactionType"
-                            value="Expense"
-                            checked={newTransaction.type === "Expense"}
-                            onChange={(e) =>
-                                setNewTransaction({
-                                    ...newTransaction,
-                                    type: e.target.value,
-                                })
-                            }
-                        />
-                        Expense
-                    </label>
-                </div>
-                <div>
-                    <button onClick={handleAddTransaction} disabled={!isTransactionFormValid}>
-                        Add {newTransaction.type === "Income" ? "Income" : "Expense"}
-                    </button>
-                </div>
-            </div>
-        );
-    };
-
-    const renderChart = () => {
-        const chartData = backendData[period];
-        const maxX = chartData.length - 1;
-        const minY = 0;
-        const maxY = Math.max(...chartData.map((data) => data.amount));
-
-        const chartWidth = 500;
-        const chartHeight = 300;
-        const xScale = chartWidth / maxX;
-        const yScale = chartHeight / maxY;
-
-        const path = chartData.map((data, index) => {
-            const x = index * xScale;
-            const y = chartHeight - data.amount * yScale;
-            return `${x},${y}`;
-        });
-
-        return (
-            <svg width={chartWidth} height={chartHeight}>
-                <polyline
-                    fill="none"
-                    stroke="blue"
-                    strokeWidth="2"
-                    points={path.join(" ")}
-                />
-            </svg>
-        );
-    };
 
     const exportToCSV = () => {
         const csvData = backendData[period].map((data, index) => ({
@@ -194,31 +73,6 @@ function Content() {
         doc.save(`chart_data_${period}.pdf`);
     };
 
-    const renderTable = () => {
-        const chartData = backendData[period];
-        return (
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Category</th>
-                        <th>Amount</th>
-                        <th>Type</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {chartData.map((data, index) => (
-                        <tr key={index}>
-                            <td>{data.date}</td>
-                            <td>{data.category}</td>
-                            <td>{data.amount}</td>
-                            <td>{data.type}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        );
-    };
 
     return (
         <div className="container-content">
@@ -231,7 +85,7 @@ function Content() {
                     <button onClick={() => handleChangePeriod("monthly")}>Monthly</button>
                 </div>
                 <div className="chart-container">
-                    {renderChart()}
+                    <RenderChart backendData={backendData} period={period} />
                     <div>
                         <CSVLink
                             data={exportToCSV()}
@@ -242,8 +96,8 @@ function Content() {
                         <button onClick={exportToPDF}>Export to PDF</button>
                     </div>
                 </div>
-                {renderTable()}
-                {renderTransactionForm()}
+                <RenderTable backendData={backendData} period={period} />
+                <RenderTransactionForm setNewTransaction={setNewTransaction} newTransaction={newTransaction} backendData={backendData} period={period} isTransactionFormValid={isTransactionFormValid} />
             </div>
         </div>
     );
