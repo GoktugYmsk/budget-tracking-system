@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
     focutInput: false,
+    expenses : []
 }
 
 export const configure = createSlice({
@@ -11,9 +12,12 @@ export const configure = createSlice({
         setFocusInput: (state, action) => {
             state.focutInput = action.payload;
         },
+        setExpenses : (state , action) => {
+            state.expenses = action.payload
+        }
     }
 })
 
-export const { setFocusInput } = configure.actions
+export const { setFocusInput , setExpenses } = configure.actions
 
 export default configure.reducer
