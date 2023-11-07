@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import './index.scss'
 
 const RenderChart = ({ backendData, period }) => {
     const chartData = backendData[period];
@@ -17,14 +18,16 @@ const RenderChart = ({ backendData, period }) => {
     });
 
     return (
-        <svg width={chartWidth} height={chartHeight}>
-            <polyline
-                fill="none"
-                stroke="blue"
-                strokeWidth="2"
-                points={path.join(" ")}
-            />
-        </svg>
+        <div className="chart-container">
+            <svg width={chartWidth} height={chartHeight}>
+                <polyline
+                    fill="none"
+                    stroke="blue"
+                    strokeWidth="2"
+                    points={path.join(" ")}
+                />
+            </svg>
+        </div>
     );
 };
 

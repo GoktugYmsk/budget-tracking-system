@@ -1,4 +1,5 @@
 import React from 'react';
+import './index.scss'
 
 const RenderTransactionForm = ({
   setNewTransaction,
@@ -31,7 +32,7 @@ const RenderTransactionForm = ({
   };
 
   return (
-    <div className="transaction-form">
+    <div className="transaction-form-container">
       <h2>Add {newTransaction.type === "Income" ? "Income" : "Expense"}</h2>
       <div className="form-input">
         <input
