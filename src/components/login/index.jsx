@@ -47,7 +47,7 @@ function Login() {
             <h2>Login</h2>
             <div className='container-login__form-group' >
                 <form onSubmit={handleSubmit}>
-                    <div className="form-group">
+                    <div className="container-login__formGroup__username">
                         <label htmlFor="username">Username:</label>
                         <input
                             type="text"
@@ -58,7 +58,7 @@ function Login() {
                             required
                         />
                     </div>
-                    <div className="form-group">
+                    <div className="container-login__formGroup__password">
                         <label htmlFor="password">Password:</label>
                         <input
                             type="password"
@@ -69,9 +69,9 @@ function Login() {
                             required
                         />
                     </div>
+                    <p className='container-login__account' >If you don't have an account</p>
                     <div className='container-login__button' >
                         <button onClick={handleLoginClick} type="submit">Login</button>
-                        <p>If you don't have an account</p>
                         <button onClick={handleSignupClick} type="submit" >Signup</button>
                     </div>
                 </form>
